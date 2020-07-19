@@ -15,5 +15,11 @@
         "roave/security-advisories": "dev-master",
         "overtrue/phplint": "^2.0",
         "squizlabs/php_codesniffer": "^3.5"
+    },
+    "scripts": {
+        "lint": [
+            "phplint",
+            "phpcs src/ --standard=./.codingstandards.xml -s"
+        ]
     }
 }
