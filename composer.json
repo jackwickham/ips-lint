@@ -1,4 +1,7 @@
 {
+    "name": "jackwickham/ips-lint",
+    "description": "Linter for IPS applications, plugins and themes",
+    "license": "MIT",
     "require": {
         "symfony/console": "^5.1",
         "monolog/monolog": "^2.1"
