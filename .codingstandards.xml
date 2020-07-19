@@ -9,6 +9,7 @@
 		<exclude name="Squiz.Functions.MultiLineFunctionDeclaration" />
 		<exclude name="PSR2.Methods.FunctionCallSignature.Indent"/>
 		<exclude name="PSR2.Methods.MethodDeclaration.AbstractAfterVisibility"/>
+		<exclude name="PSR12.ControlStructures.ControlStructureSpacing.CloseParenthesisLine"/>
 	</rule>
 
 	<rule ref="Generic.Functions.OpeningFunctionBraceKernighanRitchie" />

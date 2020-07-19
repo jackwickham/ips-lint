@@ -23,8 +23,10 @@ final class Ips {
         }
 
         define('RECOVERY_MODE', !$loadHooks);
-
         require $path . "init.php";
+        restore_error_handler();
+        restore_exception_handler();
+
         return new Ips($path);
     }
 
