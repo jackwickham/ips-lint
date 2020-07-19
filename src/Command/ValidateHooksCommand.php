@@ -4,7 +4,6 @@ namespace IpsLint\Command;
 
 use IpsLint\Ips\Ips;
 use IpsLint\Validate\HooksValidator;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Input\InputArgument;
@@ -14,11 +13,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ValidateHooksCommand extends Command {
     protected static $defaultName = "validate-hooks";
 
-    private LoggerInterface $logger;
-
-    public function __construct(LoggerInterface $logger) {
+    public function __construct() {
         parent::__construct();
-        $this->logger = $logger;
     }
 
     protected function configure() {
@@ -31,11 +27,9 @@ class ValidateHooksCommand extends Command {
     }
 
     protected function execute(InputInterface $input, OutputInterface $output) {
-        $ips = Ips::init($this->logger, $input->getArgument("suite"), $input->getArgument("path"));
-        $ips->setLogger($this->logger);
+        $ips = Ips::init($input->getArgument("suite"), $input->getArgument("path"));
 
         $validator = new HooksValidator($ips->findResources($input->getArgument("path")));
-        $validator->setLogger($this->logger);
         $errors = $validator->validate();
 
         $outputStyle = new OutputFormatterStyle('red');

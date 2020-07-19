@@ -4,16 +4,13 @@ namespace IpsLint\Validate;
 
 use IpsLint\Ips\Hook;
 use IpsLint\Ips\AbstractResource;
-use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerInterface;
+use IpsLint\Loggers;
 
-final class HooksValidator implements LoggerAwareInterface {
+final class HooksValidator {
     /**
      * @var AbstractResource[]
      */
     private array $resources;
-
-    private LoggerInterface $logger;
 
     public function __construct(array $resources) {
         $this->resources = $resources;
@@ -25,14 +22,14 @@ final class HooksValidator implements LoggerAwareInterface {
     public function validate(): array {
         $errors = [];
         foreach ($this->resources as $resource) {
-            $this->logger->debug("Processing resource {$resource->getName()}");
+            Loggers::main()->debug("Processing resource {$resource->getName()}");
             if (count($this->resources) === 1) {
                 $resourcePrefix = '';
             } else {
                 $resourcePrefix = $resource->getName() . ' ';
             }
             foreach ($resource->getHooks() as $hook) {
-                $this->logger->debug("Processing hook {$hook->getName()} from {$resource->getName()}");
+                Loggers::main()->debug("Processing hook {$hook->getName()} from {$resource->getName()}");
                 $prefix = $resourcePrefix . $hook->getName() . ': ';
                 $results = $this->validateHook($hook);
                 foreach ($results as $result) {
@@ -90,7 +87,7 @@ final class HooksValidator implements LoggerAwareInterface {
                     $numLines = $hookMethod->getEndLine() - $startLine;
                     preg_match("/^(?:.*\n){{$startLine}}((?:.*\n){{$numLines}}.*)/", $hookFile, $matches);
                     if (isset($matches[1]) && !mb_stristr($matches[1], 'parent::')) {
-                        $this->logger->info(
+                        Loggers::main()->info(
                                 "{$hookMethod->getName()} does not exist in {$hook->getClass()}, but "
                                         . "{$hook->getName()} doesn't call parent - ignoring");
                         continue;
@@ -122,9 +119,5 @@ final class HooksValidator implements LoggerAwareInterface {
         }
         // TODO: Validate parameters
         return null;
-    }
-
-    public function setLogger(LoggerInterface $logger) {
-        $this->logger = $logger;
     }
 }

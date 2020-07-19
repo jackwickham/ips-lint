@@ -2,12 +2,10 @@
 
 namespace IpsLint\Ips;
 
-use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerInterface;
+use IpsLint\Loggers;
 
-abstract class AbstractResource implements LoggerAwareInterface {
+abstract class AbstractResource {
     private string $path;
-    protected LoggerInterface $logger;
 
     protected function __construct(string $path) {
         $this->path = $path;
@@ -22,7 +20,7 @@ abstract class AbstractResource implements LoggerAwareInterface {
      */
     public function getHooks(): array {
         if (!file_exists($this->getHooksFilePath())) {
-            $this->logger->warning("No hooks.json file found in {$this->getPath()}");
+            Loggers::main()->warning("No hooks.json file found in {$this->getPath()}");
             return [];
         }
         $hookData = json_decode(file_get_contents($this->getHooksFilePath()), true, 512, JSON_THROW_ON_ERROR);
@@ -42,8 +40,4 @@ abstract class AbstractResource implements LoggerAwareInterface {
     }
 
     protected abstract function getHooksFilePath();
-
-    public function setLogger(LoggerInterface $logger) {
-        $this->logger = $logger;
-    }
 }

@@ -2,12 +2,8 @@
 
 namespace IpsLint\Ips;
 
-use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerInterface;
-
-final class Ips implements LoggerAwareInterface {
+final class Ips {
     private string $path;
-    private LoggerInterface $logger;
 
     private function __construct(string $path) {
         $this->path = $path;
@@ -16,8 +12,7 @@ final class Ips implements LoggerAwareInterface {
     /**
      * @throws \RuntimeException If no suitable path or init.php file can be found
      */
-    public static function init(
-            LoggerInterface $logger, ?string $path, ?string $resource = null, bool $loadHooks = false): Ips {
+    public static function init(?string $path, ?string $resource = null, bool $loadHooks = false): Ips {
         if ($path === null) {
             $path = self::searchForRootPath($resource ?? getcwd());
         } else {
@@ -58,12 +53,10 @@ final class Ips implements LoggerAwareInterface {
         }
         if (file_exists($path . "Application.php")) {
             $app = new Application($path);
-            $app->setLogger($this->logger);
             return [$app];
         }
         if (file_exists($path . "dev")) {
             $plugin = new Plugin($path);
-            $plugin->setLogger($this->logger);
             return [$plugin];
         }
         if (file_exists($path . "hooks")) {
@@ -84,9 +77,5 @@ final class Ips implements LoggerAwareInterface {
 
     private static function normalisePath(string $path): string {
         return rtrim($path, '/') . '/';
-    }
-
-    public function setLogger(LoggerInterface $logger) {
-        $this->logger = $logger;
     }
 }
