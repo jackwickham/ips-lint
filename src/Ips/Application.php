@@ -7,7 +7,7 @@ final class Application extends AbstractResource {
         parent::__construct($path);
     }
 
-    protected function getHooksFilePath() {
+    public function getHooksFilePath() {
         return $this->getPath() . 'data/hooks.json';
     }
 }

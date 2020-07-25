@@ -39,5 +39,5 @@ abstract class AbstractResource {
         return basename($this->path);
     }
 
-    protected abstract function getHooksFilePath();
+    public abstract function getHooksFilePath();
 }

@@ -3,6 +3,7 @@
 namespace IpsLint\Command;
 
 use IpsLint\Ips\Ips;
+use IpsLint\Lint\Formatter;
 use IpsLint\Validate\HooksValidator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
@@ -32,11 +33,9 @@ class ValidateHooksCommand extends Command {
         $validator = new HooksValidator($ips->findResources($input->getArgument("path")));
         $errors = $validator->validate();
 
-        $outputStyle = new OutputFormatterStyle('red');
-        $output->getFormatter()->setStyle('linterror', $outputStyle);
-        foreach ($errors as $error) {
-            $output->writeln("<linterror>{$error}</linterror>");
-        }
+        $formatter = new Formatter($errors);
+        $formatter->setConsoleStyles($output->getFormatter());
+        $output->writeln($formatter->formatForConsole());
 
         return count($errors) ? Command::FAILURE : Command::SUCCESS;
     }
