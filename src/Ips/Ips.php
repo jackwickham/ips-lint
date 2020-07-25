@@ -34,7 +34,7 @@ final class Ips {
      * @throws \RuntimeException If no suitable path can be found
      */
     private static function searchForRootPath(string $path): string {
-        for ($i = 0; $i < 2; $i++) {
+        for ($i = 0; $i < 3; $i++) {
             $path = self::normalisePath($path);
             if (file_exists($path . "init.php")) {
                 return $path;

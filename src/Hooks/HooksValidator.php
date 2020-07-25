@@ -1,12 +1,17 @@
 <?php
 
-namespace IpsLint\Validate;
+namespace IpsLint\Hooks;
 
 use IpsLint\Ips\Hook;
 use IpsLint\Ips\AbstractResource;
 use IpsLint\Lint\Error;
 use IpsLint\Loggers;
 use IpsLint\Utils\StringUtils;
+use PhpParser\Lexer;
+use PhpParser\Node;
+use PhpParser\NodeTraverser;
+use PhpParser\NodeVisitorAbstract;
+use PhpParser\ParserFactory;
 
 final class HooksValidator {
     private const DEFAULT_CONF = [
@@ -118,36 +123,37 @@ final class HooksValidator {
             if (!mb_stristr($hookMethod->getDocComment(), '@ips-lint ignore')) {
                 try {
                     $originalMethod = $originalClass->getMethod($hookMethod->getName());
-                } catch (\ReflectionException $e) {
-                    $methodContents = StringUtils::extractLines(
-                        $hookFile,
-                        $hookMethod->getStartLine(),
-                        $hookMethod->getEndLine());
-                    // TODO: Use AST parser for this
-                    if (isset($methodContents) && !mb_stristr($methodContents, 'parent::')) {
-                        Loggers::main()->info(
-                            "{$hookMethod->getName()} does not exist in {$hook->getClass()}, but "
-                            . "{$hook->getName()} doesn't call parent - ignoring");
-                        continue;
+                    $result = $this->validateHookSignature(
+                        $hookMethod, $originalMethod, $resource, $hook);
+                    if ($result !== null) {
+                        $errors[] = $result;
                     }
-                    $errors[] = new Error(
-                        "Method {$hookMethod->getName()} does not exist in {$hook->getClass()}",
-                        self::ERR_HOOK_PARENT_METHOD_DOESNT_EXIST,
-                        $resource,
-                        $hook->getPath());
-                    continue;
+                } catch (\ReflectionException $e) {
+                    Loggers::main()->info(
+                        "Not validating signature of {$hookMethod->getName()} because it doesn't exist in the parent");
                 }
-                $result = $this->validateHookMethod(
-                    $hookMethod, $originalMethod, $resource, $hook);
-                if ($result !== null) {
-                    $errors[] = $result;
+
+                $methodBody = StringUtils::extractLines(
+                    $hookFile,
+                    $hookMethod->getStartLine(),
+                    $hookMethod->getEndLine());
+                $parentUsages = $this->findParentUsages($methodBody, $hookMethod->getStartLine());
+                foreach ($parentUsages as $parentUsage) {
+                    if (!$originalClass->hasMethod($parentUsage['method'])) {
+                        $errors[] = new Error(
+                            "Method {$hookMethod->getName()} does not exist in {$hook->getClass()}",
+                            self::ERR_HOOK_PARENT_METHOD_DOESNT_EXIST,
+                            $resource,
+                            $hook->getPath(),
+                            $parentUsage['line']);
+                    }
                 }
             }
         }
         return $errors;
     }
 
-    private function validateHookMethod(
+    private function validateHookSignature(
             \ReflectionMethod $hookMethod,
             \ReflectionMethod $originalMethod,
             AbstractResource $resource,
@@ -270,5 +276,24 @@ final class HooksValidator {
             }
         }
         return null;
+    }
+
+    private function findParentUsages(string $methodBody, int $firstLineNum): array {
+        $lexer = new Lexer(['usedAttributes' => ['startLine']]);
+        $parser = (new ParserFactory())->create(ParserFactory::PREFER_PHP7, $lexer);
+        try {
+            $ast = $parser->parse("<?php class _fake_class_ {\n{$methodBody}\n}");
+        } catch (\Exception $e) {
+            Loggers::main()->error("Failed to parse AST: {$e->getMessage()}\n{$e->getTraceAsString()}");
+            throw $e;
+            return [];
+        }
+
+        $visitor = new ParentVisitor($firstLineNum - 1);
+        $traverser = new NodeTraverser();
+        $traverser->addVisitor($visitor);
+        $traverser->traverse($ast);
+
+        return $visitor->getParentCalls();
     }
 }

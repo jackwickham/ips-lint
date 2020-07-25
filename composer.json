@@ -4,7 +4,8 @@
     "license": "MIT",
     "require": {
         "symfony/console": "^5.1",
-        "monolog/monolog": "^2.1"
+        "monolog/monolog": "^2.1",
+        "nikic/php-parser": "^4.6"
     },
     "autoload": {
         "psr-4": {

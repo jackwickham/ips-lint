@@ -9,7 +9,7 @@ final class StringUtils {
     public static function extractLines(string $str, int $startLineInclusive, int $endLineInclusive): ?string {
         $startLine = $startLineInclusive - 1;
         $numLines = $endLineInclusive - $startLine;
-        preg_match("/^(?:.*\n){{$startLine}}((?:.*\n){{$numLines}}.*)/", $str, $matches);
+        preg_match("/^(?:.*\n){{$startLine}}((?:.*\n){{$numLines}})/", $str, $matches);
         return $matches[1] ?? null;
     }
 }

@@ -2,7 +2,7 @@
 
 namespace IpsLint\Lint;
 
-use IpsLint\Validate\HooksValidator;
+use IpsLint\Hooks\HooksValidator;
 use Symfony\Component\Console\Formatter\OutputFormatterInterface;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 
@@ -43,9 +43,11 @@ final class Formatter {
                 $col = $error->getCol() === null ? '    ' : (':' . \str_pad($error->getCol(), 3, ' ', STR_PAD_RIGHT));
 
                 if ($level === self::LEVEL_ERROR) {
-                    $result[] = "{$line}{$col} <linterror>ERROR</linterror> {$error->getMessage()} ({$error->getCode()})";
-                } else if ($level === self::LEVEL_WARN) {
-                    $result[] = "{$line}{$col} <lintwarning>WARN</lintwarning>  {$error->getMessage()} ({$error->getCode()})";
+                    $result[] = "{$line}{$col} <linterror>ERROR</linterror> {$error->getMessage()} " .
+                        "({$error->getCode()})";
+                } elseif ($level === self::LEVEL_WARN) {
+                    $result[] = "{$line}{$col} <lintwarning>WARN</lintwarning>  {$error->getMessage()} " .
+                        "({$error->getCode()})";
                 } else {
                     throw new \LogicException("Unknown level {$level}");
                 }

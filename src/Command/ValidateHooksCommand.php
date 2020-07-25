@@ -4,7 +4,7 @@ namespace IpsLint\Command;
 
 use IpsLint\Ips\Ips;
 use IpsLint\Lint\Formatter;
-use IpsLint\Validate\HooksValidator;
+use IpsLint\Hooks\HooksValidator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Input\InputArgument;
