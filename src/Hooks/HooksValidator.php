@@ -285,7 +285,6 @@ final class HooksValidator {
             $ast = $parser->parse("<?php class _fake_class_ {\n{$methodBody}\n}");
         } catch (\Exception $e) {
             Loggers::main()->error("Failed to parse AST: {$e->getMessage()}\n{$e->getTraceAsString()}");
-            throw $e;
             return [];
         }
 

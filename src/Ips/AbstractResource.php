@@ -39,5 +39,28 @@ abstract class AbstractResource {
         return basename($this->path);
     }
 
+    public function getTemplates(): array {
+        $htmlPath = "{$this->getPath()}dev/html/";
+        if (file_exists($htmlPath)) {
+            return $this->recursivelySearchDir($htmlPath, ".phtml");
+        }
+        return [];
+    }
+
+    private function recursivelySearchDir($dir, $desiredExtension): array {
+        $result = [];
+        foreach (new \DirectoryIterator($dir) as $child) {
+            if ($child->isDot() || substr($child->getFilename(), 0, 1) === '.') {
+                continue;
+            }
+            if ($child->isDir()) {
+                $result = [...$result, ...$this->recursivelySearchDir($dir . $child . '/', $desiredExtension)];
+            } elseif (substr($child->getFilename(), -strlen($desiredExtension)) === $desiredExtension) {
+                $result[] = $dir . $child->getFilename();
+            }
+        }
+        return $result;
+    }
+
     public abstract function getHooksFilePath();
 }
