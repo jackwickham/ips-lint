@@ -30,6 +30,7 @@ final class HooksValidator {
     public const ERR_HOOK_METHOD_EXTRA_REQUIRED_PARAMETER = "H105";
     public const ERR_HOOK_METHOD_INCOMPATIBLE_PARAMETER_TYPE = "H106";
     public const ERR_HOOK_METHOD_PARAMETER_NAME_CHANGED = "H107";
+    public const ERR_HOOK_METHOD_PARAMETER_VALUE_CHANGED = "H108";
     public const ERR_HOOK_PARENT_METHOD_DOESNT_EXIST = "H201";
 
     /**
@@ -246,6 +247,18 @@ final class HooksValidator {
                     return new Error(
                         "Parameter {$param[0]->getName()} is optional in {$method}, but is required in the hook",
                         self::ERR_HOOK_METHOD_EXTRA_REQUIRED_PARAMETER,
+                        $resource,
+                        $hook->getPath(),
+                        $hookMethod->getStartLine());
+                }
+            } else if ($param[1] !== null && $param[1]->isOptional()) {
+                $hookDefault = $param[0]->getDefaultValue();
+                $originalDefault = $param[1]->getDefaultValue();
+                if ($hookDefault !== $originalDefault) {
+                    return new Error(
+                        "Parameter {$param[0]->getName()} has default value " . print_r($originalDefault, true) .
+                                " in {$method}, but " . print_r($hookDefault, true) . ' in the hook',
+                        self::ERR_HOOK_METHOD_PARAMETER_VALUE_CHANGED,
                         $resource,
                         $hook->getPath(),
                         $hookMethod->getStartLine());
