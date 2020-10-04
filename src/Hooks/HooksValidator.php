@@ -249,7 +249,7 @@ final class HooksValidator {
                         $hook->getPath(),
                         $hookMethod->getStartLine());
                 }
-            } else if ($param[1] !== null && $param[1]->isOptional()) {
+            } elseif ($param[1] !== null && $param[1]->isOptional()) {
                 $hookDefault = $param[0]->getDefaultValue();
                 $originalDefault = $param[1]->getDefaultValue();
                 if ($hookDefault !== $originalDefault) {
