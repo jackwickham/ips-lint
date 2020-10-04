@@ -8,9 +8,7 @@ use IpsLint\Lint\Error;
 use IpsLint\Loggers;
 use IpsLint\Utils\StringUtils;
 use PhpParser\Lexer;
-use PhpParser\Node;
 use PhpParser\NodeTraverser;
-use PhpParser\NodeVisitorAbstract;
 use PhpParser\ParserFactory;
 
 final class HooksValidator {
@@ -86,7 +84,7 @@ final class HooksValidator {
             $hookFile);
 
         try {
-            eval($hookFile);
+            @eval($hookFile);
         } catch (\ParseError $e) {
             return [new Error(
                 "ParseError while parsing hook: {$e->getMessage()}",
@@ -106,7 +104,7 @@ final class HooksValidator {
                 $hook->getPath())];
         }
         if (mb_stristr($hookClass->getDocComment(), '@ips-lint ignore')) {
-            return null;
+            return [];
         }
 
         try {
