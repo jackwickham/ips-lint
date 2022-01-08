@@ -7,7 +7,6 @@ use IpsLint\Lint\Error;
 use IpsLint\Loggers;
 
 final class TemplatesValidator {
-
     public const ERR_TEMPLATE_INTERPOLATION_MISSING_BRACES = "T001";
 
     /**
