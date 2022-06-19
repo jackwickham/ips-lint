@@ -3,9 +3,9 @@
     "description": "Linter for IPS applications, plugins and themes",
     "license": "MIT",
     "require": {
-        "symfony/console": "^5.1",
-        "monolog/monolog": "^2.1",
-        "nikic/php-parser": "^4.6"
+        "symfony/console": "^5.4",
+        "monolog/monolog": "^2.7",
+        "nikic/php-parser": "^4.14"
     },
     "autoload": {
         "psr-4": {
@@ -14,8 +14,8 @@
     },
     "require-dev": {
         "roave/security-advisories": "dev-master",
-        "overtrue/phplint": "^3.0",
-        "squizlabs/php_codesniffer": "^3.5"
+        "overtrue/phplint": "^4.2",
+        "squizlabs/php_codesniffer": "^3.7"
     },
     "scripts": {
         "lint": [
