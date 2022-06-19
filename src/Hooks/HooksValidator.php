@@ -165,10 +165,12 @@ final class HooksValidator {
                 $hook->getPath(),
                 $hookMethod->getStartLine());
         }
-        if ($originalMethod->isPublic() && !$hookMethod->isPublic()) {
+        if ($originalMethod->isPublic() !== $hookMethod->isPublic()) {
+            $originalModifiers = implode(' ', \Reflection::getModifierNames($originalMethod->getModifiers()));
+            $hookModifiers = implode(' ', \Reflection::getModifierNames($hookMethod->getModifiers()));
             return new Error(
-                "Method {$hookMethod->getName()} is public in {$originalMethod->getDeclaringClass()->getName()}, " .
-                    "but not in the hook",
+                "Method {$hookMethod->getName()} ({$hookModifiers}) does not have same visibility as in " .
+                    "{$originalMethod->getDeclaringClass()->getName()} ({$originalModifiers})",
                 self::ERR_HOOK_VISIBILITY_CHANGED,
                 $resource,
                 $hook->getPath(),
