@@ -5,7 +5,7 @@
     "require": {
         "symfony/console": "^5.4",
         "monolog/monolog": "^3.8",
-        "nikic/php-parser": "^4.14"
+        "nikic/php-parser": "^5.4"
     },
     "autoload": {
         "psr-4": {
